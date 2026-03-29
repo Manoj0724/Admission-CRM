@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { User } from '../types'
 import { getMeAPI } from '../services/api'
+import PageLoader from '../components/PageLoader'
+
 
 interface AuthContextType {
   user: User | null
@@ -45,11 +47,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null)
   }
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
-      {children}
-    </AuthContext.Provider>
-  )
+ if (isLoading) {
+  return <PageLoader />
+}
+
+return (
+  <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    {children}
+  </AuthContext.Provider>
+)
 }
 
 export const useAuth = () => useContext(AuthContext)

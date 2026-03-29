@@ -2,6 +2,7 @@ import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Role } from '../types'
+import PageLoader from './PageLoader'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -11,13 +12,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
   const { user, isLoading } = useAuth()
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-      </div>
-    )
-  }
+  if (isLoading) return <PageLoader />
 
   if (!user) return <Navigate to="/login" replace />
 
