@@ -21,6 +21,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Admission CRM API Running 🚀' })
 })
 
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://admission-crm-frontend.onrender.com',
+    /\.onrender\.com$/
+  ],
+  credentials: true
+})) 
+
 // ─── Routes ──────────────────────────────────────
 app.use('/api/auth',       authRoutes)
 app.use('/api/masters',    mastersRoutes)
