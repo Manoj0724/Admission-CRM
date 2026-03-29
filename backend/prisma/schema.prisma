@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────
+
+enum Role {
+  ADMIN
+  ADMISSION_OFFICER
+  MANAGEMENT
+}
+
+enum CourseType {
+  UG
+  PG
+}
+
+enum EntryType {
+  Regular
+  Lateral
+}
+
+enum AdmissionMode {
+  Government
+  Management
+}
+
+enum QuotaType {
+  KCET
+  COMEDK
+  Management
+}
+
+enum DocumentStatus {
+  Pending
+  Submitted
+  Verified
+}
+
+enum FeeStatus {
+  Pending
+  Paid
+}
+
+// ─── MODELS ──────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMISSION_OFFICER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Institution {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  campuses  Campus[]
+  createdAt DateTime @default(now())
+}
+
+model Campus {
+  id            String       @id @default(cuid())
+  name          String
+  institutionId String
+  institution   Institution  @relation(fields: [institutionId], references: [id])
+  departments   Department[]
+  createdAt     DateTime     @default(now())
+}
+
+model Department {
+  id        String    @id @default(cuid())
+  name      String
+  code      String
+  campusId  String
+  campus    Campus    @relation(fields: [campusId], references: [id])
+  programs  Program[]
+  createdAt DateTime  @default(now())
+}
+
+model Program {
+  id            String        @id @default(cuid())
+  name          String
+  code          String
+  courseType    CourseType
+  entryType     EntryType
+  admissionMode AdmissionMode
+  academicYear  String
+  totalIntake   Int
+  departmentId  String
+  department    Department    @relation(fields: [departmentId], references: [id])
+  quotas        Quota[]
+  applicants    Applicant[]
+  createdAt     DateTime      @default(now())
+}
+
+model Quota {
+  id        String    @id @default(cuid())
+  type      QuotaType
+  total     Int
+  filled    Int       @default(0)
+  programId String
+  program   Program   @relation(fields: [programId], references: [id])
+  createdAt DateTime  @default(now())
+
+  @@unique([programId, type])
+}
+
+model Applicant {
+  id              String         @id @default(cuid())
+  name            String
+  email           String
+  phone           String
+  dob             DateTime
+  gender          String
+  category        String
+  entryType       EntryType
+  quotaType       QuotaType
+  allotmentNumber String?
+  marks           Float
+  programId       String
+  program         Program        @relation(fields: [programId], references: [id])
+  docStatus       DocumentStatus @default(Pending)
+  feeStatus       FeeStatus      @default(Pending)
+  admission       Admission?
+  createdAt       DateTime       @default(now())
+}
+
+model Admission {
+  id              String    @id @default(cuid())
+  admissionNumber String    @unique
+  applicantId     String    @unique
+  applicant       Applicant @relation(fields: [applicantId], references: [id])
+  confirmedAt     DateTime  @default(now())
+}
