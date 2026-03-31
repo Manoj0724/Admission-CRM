@@ -550,7 +550,7 @@ Tests were written **before or alongside** the implementation of each feature.
 ✅ Dashboard shows stat cards
 ```
 
-**Total E2E Tests: 23 passing ✅**
+**Total E2E Tests: 80 passing ✅**
 
 #### TDD Cycle Followed
 ```
